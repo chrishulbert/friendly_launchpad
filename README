@@ -3,9 +3,32 @@ Chris Hulbert
 chris.hulbert@gmail.com
 http://github.com/chrishulbert/friendly_launchpad
 
-This is my attempt at making the MSP430 Launchpad as simple to program as the Arduino
+This is my attempt at making the MSP430 Launchpad as simple to program as the Arduino.
+* This will hopefully work with your compiler, but it is designed to compile using the toolchain from http://code.google.com/p/osx-launchpad/ 
+* You will want to add '-std=gnu99' to your CFLAGS in your makefile too.
 
-Example:
+Very simple example:
+
+    #include "../friendly_launchpad/friendly_launchpad.h"
+
+    void setup() {
+      // initialize the red led as output
+      pinMode(10, OUTPUT);
+      // initialize the green led as output
+      pinMode(16, OUTPUT);
+    }
+
+    void loop() {
+      // Flash the lights
+      digitalWrite(10, HIGH);  
+      digitalWrite(16, LOW);
+      delay(500);
+      digitalWrite(10, LOW);  
+      digitalWrite(16, HIGH);
+      delay(500);
+    }
+
+Another example:
 
     #include "../friendly_launchpad/friendly_launchpad.h"
 
@@ -69,4 +92,87 @@ Example:
         digitalWrite(ledPin, LOW); 
         digitalWrite(ledPin2, HIGH);
       }
+    }
+
+Another example:
+
+    #include "../friendly_launchpad/friendly_launchpad.h"
+
+    /*
+      State change detection (edge detection)
+      
+     Often, you don't need to know the state of a digital input all the time,
+     but you just need to know when the input changes from one state to another.
+     For example, you want to know when a button goes from OFF to ON.  This is called
+     state change detection, or edge detection.
+     
+     This example shows how to detect when a button or button changes from off to on
+     and on to off.
+      
+     The circuit:
+     * pushbutton attached to pin 2 from +5V
+     * 10K resistor attached to pin 2 from ground
+     * LED attached from pin 13 to ground (or use the built-in LED on
+       most Arduino boards)
+     
+     created  27 Sep 2005
+     modified 14 Oct 2010
+     by Tom Igoe
+     modified 7 Mar 2011 by Chris Hulbert to suit Friendly Launchpad
+
+    This example code is in the public domain.
+      
+     http://arduino.cc/en/Tutorial/ButtonStateChange
+     
+     */
+
+    // this constant won't change:
+    const int  buttonPin = 13;    // the pin that the pushbutton is attached to
+    const int ledPin = 16;       // the pin that the LED is attached to
+
+    // Variables will change:
+    int buttonPushCounter = 0;   // counter for the number of button presses
+    int buttonState = 0;         // current state of the button
+    int lastButtonState = 0;     // previous state of the button
+
+    void setup() {
+      // initialize the button pin as a input:
+      pinMode(buttonPin, INPUT);
+      // initialize the LED as an output:
+      pinMode(ledPin, OUTPUT);
+    }
+
+
+    void loop() {
+      // read the pushbutton input pin:
+      buttonState = digitalRead(buttonPin);
+
+      // compare the buttonState to its previous state
+      if (buttonState != lastButtonState) {
+        // if the state has changed, increment the counter
+        if (buttonState == HIGH) {
+          // if the current state is HIGH then the button
+          // wend from off to on:
+          buttonPushCounter++;
+        } 
+        else {
+          // if the current state is LOW then the button
+          // wend from on to off:
+        }
+      }
+      // save the current state as the last state, 
+      //for next time through the loop
+      lastButtonState = buttonState;
+
+      
+      // turns on the LED every four button pushes by 
+      // checking the modulo of the button push counter.
+      // the modulo function gives you the remainder of 
+      // the division of two numbers:
+      if (buttonPushCounter % 4 == 0) {
+        digitalWrite(ledPin, HIGH);
+      } else {
+       digitalWrite(ledPin, LOW);
+      }
+      
     }
